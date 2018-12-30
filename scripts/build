@@ -1,2 +1,4 @@
 #!/usr/bin/env bash
+cd "$(dirname "$0")"
+cd ..
 GOOS=js GOARCH=wasm go build -o "web/main.wasm"
