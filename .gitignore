@@ -1,1 +1,5 @@
 *~
+
+# temporarily ignore docker files
+dock
+dockerfile

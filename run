@@ -1,0 +1,3 @@
+#!/usr/bin/env bash
+export PATH="$PATH:$(go env GOROOT)/misc/wasm"
+GOOS=js GOARCH=wasm go run .
