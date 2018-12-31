@@ -1,3 +1,4 @@
 #!/usr/bin/env bash
+go fmt
 GOOS=js GOARCH=wasm go build -o "web/main.wasm"
 go run scripts/serve.go -a :8080

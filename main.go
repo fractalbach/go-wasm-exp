@@ -15,13 +15,22 @@ var r = rand.New(rand.NewSource(time.Now().UnixNano()))
 
 // =======================================================================
 
+/*
+Game is the logical core of the game itself.  All platform-independent game
+state and logic are represented.  To port the game to another platform,
+Write platform-specific operations that interact with this Game object.
+*/
 type Game struct {
 	objects []*GameObject
 	w       float64
 	h       float64
 }
 
-func (g *Game) step() {
+/*
+Step does one single iteration of the game.  New object positions are
+calculated in this function.
+*/
+func (g *Game) Step() {
 	for _, o := range g.objects {
 		nextX := o.X + o.Vx
 		nextY := o.Y + o.Vy
@@ -47,6 +56,22 @@ func (g *Game) step() {
 		o.Y = nextY
 		o.Vx = nextVx
 		o.Vy = nextVy
+	}
+}
+
+/*
+RunGameTicker loops forever, calling game.Step() every timePerTick. Note that
+RunGameTicker is a blocking call, so call it using the "go" keyword if you want
+to continue execution and let the game ticker run in the background.
+*/
+func RunGameTicker(game *Game, timePerTick time.Duration) {
+	ticker := time.NewTicker(timePerTick)
+	defer ticker.Stop()
+	for {
+		select {
+		case <-ticker.C:
+			game.Step()
+		}
 	}
 }
 
@@ -84,28 +109,23 @@ func print(args ...interface{}) {
 // =======================================================================
 
 func main() {
-
 	print("main started.")
 	defer print("main ended.")
-
 	const (
 		n = 30
 		w = 1000.0
 		h = 1000.0
 	)
-
 	g := &Game{
 		objects: make([]*GameObject, n),
 		w:       w,
 		h:       h,
 	}
-
 	// populate game with objects.
 	for i := 0; i < n; i++ {
 		g.objects[i] = randGameObject(g.w, g.h)
 	}
-
-	runForWeb(g)
+	runForWeb(g) // TODO: use only in "web-only" mode.
 }
 
 // ========================================================================
@@ -114,28 +134,15 @@ func main() {
 
 func runForWeb(game *Game) {
 	var (
-		ping    = make(chan bool)
-		pong    = make(chan bool)
-		counter = 0
-		c       = canvas.New(game.w, game.h)
+		c           = canvas.New(game.w, game.h)
+		timePerTick = time.Millisecond * 20
 	)
 	draw := func() {
+		c.Clear()
 		for _, obj := range game.objects {
 			c.DrawCircle(&obj.Circle)
 		}
 	}
-	canvas.AnimationLoop(ping, pong, draw)
-	for {
-		select {
-		case <-ping:
-			c.Clear()
-			game.step()
-			draw()
-			counter++
-			if counter%1000 == 0 {
-				fmt.Println("counter=", counter, ", time=", time.Now())
-			}
-			pong <- true
-		}
-	}
+	canvas.DefineAnimationLoop(draw)
+	RunGameTicker(game, timePerTick)
 }

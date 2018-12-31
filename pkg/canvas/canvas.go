@@ -38,11 +38,10 @@ func New(w, h float64) *Canvas {
 	return canv
 }
 
-func AnimationLoop(ding chan bool, ack chan bool, f func()) {
+func DefineAnimationLoop(f func()) {
 	var loop js.Callback
 	loop = js.NewCallback(func(args []js.Value) {
-		ding <- true
-		<-ack
+		f()
 		js.Global().Get("window").Call("requestAnimationFrame", loop)
 	})
 	js.Global().Get("window").Call("requestAnimationFrame", loop)
