@@ -5,6 +5,7 @@ package main
 import (
 	"fmt"
 	"math/rand"
+	"syscall/js"
 	"time"
 
 	"github.com/fractalbach/go-wasm-exp/pkg/canvas"
@@ -110,7 +111,7 @@ func print(args ...interface{}) {
 
 func main() {
 	print("main started.")
-	defer print("main ended.")
+	defer js.Global().Call("displayError", "internal error")
 	const (
 		n = 30
 		w = 1000.0

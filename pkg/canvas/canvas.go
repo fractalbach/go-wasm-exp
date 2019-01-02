@@ -23,7 +23,8 @@ type Canvas struct {
 
 // New creates a new Canvas element, and returns its reference.
 func New(w, h float64) *Canvas {
-	ele := js.Global().Get("document").Call("createElement", "Canvas")
+	// ele := js.Global().Get("document").Call("createElement", "Canvas")
+	ele := js.Global().Get("document").Call("querySelector", "#game")
 	ctx := ele.Call("getContext", "2d")
 	canv := &Canvas{
 		width:   w,
@@ -31,9 +32,9 @@ func New(w, h float64) *Canvas {
 		element: ele,
 		ctx:     ctx,
 	}
-	js.Global().Get("document").Get("body").Call("appendChild", canv.element)
-	canv.element.Call("setAttribute", "width", w)
-	canv.element.Call("setAttribute", "height", h)
+	// js.Global().Get("document").Get("body").Call("appendChild", canv.element)
+	// canv.element.Call("setAttribute", "width", w)
+	// canv.element.Call("setAttribute", "height", h)
 	canv.element.Get("style").Call("setProperty", "border", "1px solid black")
 	return canv
 }
@@ -45,6 +46,7 @@ func DefineAnimationLoop(f func()) {
 		js.Global().Get("window").Call("requestAnimationFrame", loop)
 	})
 	js.Global().Get("window").Call("requestAnimationFrame", loop)
+	js.Global().Call("doneLoading")
 }
 
 // Drawable can be drawn onto a canvas using the Draw function.

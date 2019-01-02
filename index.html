@@ -1,13 +1,65 @@
 <html>
-	<head>
-		<meta charset="utf-8">
-		<script src="web/wasm_exec.js"></script>
-		<script>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+</head>
+<body>
+	<canvas id="game" width="1000" height="1000"></canvas>
+	<div class="loadbox">Loading...</div>
+	<script src="web/wasm_exec.js"></script>
+	<script>
+	function doneLoading() {
+		document.querySelector('.loadbox').classList.add('hidden');
+	}
+	function displayError(err) {
+		let box = document.createElement('div');
+		box.innerText = err;
+		box.classList.add('errorbox');
+		document.body.appendChild(box);
+	}
+	window.addEventListener('load', ()=>{
+		let canvas = document.querySelector('#game');
+		let ctx = canvas.getContext('2d');
+		try {
 			const go = new Go();
 			WebAssembly.instantiateStreaming(fetch("web/main.wasm"), go.importObject).then((result) => {
 				go.run(result.instance);
 			});
-		</script>
-	</head>
-	<body></body>
+		} catch(err) {
+			console.error(err);
+			doneLoading();
+		}
+	})
+	</script>
+	<style>
+		html, body {
+			margin: 0;
+			padding: 0;
+		}
+		canvas {
+			border: 1px solid black;
+		}
+		.loadbox, .errorbox {
+			pointer-events: none;
+			position: fixed;
+			top: 0;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			text-align: center;
+			font-size: 200%;
+		}
+		.loadbox {
+			color: darkgreen;
+			background: rgba(0, 100, 0, 0.2);
+		}
+		.errorbox {
+			color: darkred;
+			background: rgba(100, 0, 0, 0.2);
+		}
+		.hidden {
+			display: none;
+		}
+	</style>
+</body>
 </html>
