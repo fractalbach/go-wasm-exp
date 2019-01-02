@@ -46,7 +46,7 @@ func DefineAnimationLoop(f func()) {
 		js.Global().Get("window").Call("requestAnimationFrame", loop)
 	})
 	js.Global().Get("window").Call("requestAnimationFrame", loop)
-	js.Global().Call("doneLoading")
+	// js.Global().Call("doneLoading")
 	// panic("omg! a wild error has appeared!")
 }
 

@@ -9,10 +9,32 @@
 	<div class="errorbox hidden">
 		<div class="errclose">Close Overlay</div>
 		<div class="errTitle">Errors and Messages:</div>
+		<div id="errlog"></div>
 	</div>
-	<script src="web/err.js"></script>
+	<script src="web/init.js"></script>
 	<script src="web/wasm_exec.js"></script>
-	<script src="web/run.js"></script>
+	<script>
+	// __________________________________________________________________
+	//      Polyfill
+	// ==================================================================
+	if (!WebAssembly.instantiateStreaming) {
+		WebAssembly.instantiateStreaming = async (resp, importObject) => {
+			const source = await (await resp).arrayBuffer();
+			return await WebAssembly.instantiate(source, importObject);
+		};
+	}
+	// __________________________________________________________________
+	// 		Fetch and Run WebAssembly Program
+	// ==================================================================
+	const go = new Go();
+	WebAssembly.instantiateStreaming(fetch("web/main.wasm"), go.importObject).then((result) => {
+		hideLoadingScreen();
+		go.run(result.instance)
+	}).catch((err) => {
+		console.error(err);
+		displayErrorMessage(err);
+	});
+	</script>
 	<style>
 		html, body, canvas {
 			position: fixed;
@@ -43,7 +65,6 @@
 				height: calc(100vw - 2px);
 			}
 		}
-
 		.loadbox, .errorbox {
 			position: fixed;
 			top: 0;
@@ -57,9 +78,8 @@
 			padding: 1em 0;
 		}
 		.errorbox {
-			overflow-y: auto;
 			color: white;
-			background: rgba(100, 0, 0, 0.7);
+			background: rgba(100, 0, 0, 0.5);
 		}
 		.errclose {
 			background: #500;
@@ -69,13 +89,25 @@
 			padding: 1em;
 			margin: auto;
 		}
-		.errline {
-			font-family: monospace;
-			border-bottom: thin dashed lightgray;
-			padding: 0.1em;
+		.errclose:hover{
+			background: lightblue;
+			color: black;
+			cursor: pointer;
+			border: 5px inset white;
 		}
-		.infoline {
-			padding-left: 2em;
+		#errlog {
+			font-family: monospace;
+			overflow: auto;
+			border: thin dashed lightgray;
+			display: grid;
+		}
+		.errline:nth-child(even) {
+			background: rgb(113, 24, 24)
+		}
+		.errline {
+			background: rgb(73, 13, 13);
+			padding: 0.1em;
+			white-space: pre;
 		}
 		.loadbox {
 			color: white;
