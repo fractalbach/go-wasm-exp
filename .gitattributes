@@ -1,0 +1,2 @@
+# When counting language stats, ignore 3rd party javascript
+web/wasm_exec.js linguist-detectable=false
