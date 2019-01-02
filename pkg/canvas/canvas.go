@@ -47,6 +47,7 @@ func DefineAnimationLoop(f func()) {
 	})
 	js.Global().Get("window").Call("requestAnimationFrame", loop)
 	js.Global().Call("doneLoading")
+	// panic("omg! a wild error has appeared!")
 }
 
 // Drawable can be drawn onto a canvas using the Draw function.

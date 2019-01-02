@@ -1,3 +1,9 @@
+/* ===================== Initialize Canvas ================= */
+
+/** called when webassembly program finishes loading it's first canvas frame. */
+function doneLoading() {
+    document.querySelector('.loadbox').classList.add('hidden');
+}
 
 /* Define variables. These will get called by code in webassembly. */
 var canvas = document.querySelector('#game');
@@ -8,22 +14,12 @@ ctx.lineWidth = 4;
 ctx.lineCap = 'round';
 
 
-/** called when webassembly program finishes loading it's first canvas frame. */
-function doneLoading() {
-    document.querySelector('.loadbox').classList.add('hidden');
-}
 
-/** creates and shows a error overlay screen. */
-function displayError(err) {
-    let box = document.createElement('div');
-    box.innerText = err;
-    box.classList.add('errorbox');
-    document.body.appendChild(box);
-}
+/* ===================== Run WebAssembly ================= */
 
-// window.addEventListener('load', ()=>{
+window.addEventListener('load', function(){
     try {
-        /* BEGIN: 3rd party code from golang repository: Jan 2019. */
+        /* BEGIN: 3rd party code: golang repo: Jan 2019. */
         const go = new Go();
         WebAssembly.instantiateStreaming(fetch("web/main.wasm"), go.importObject).then((result) => {
             go.run(result.instance);
@@ -33,4 +29,4 @@ function displayError(err) {
         console.error(err);
         doneLoading();
     }
-// });
+});
