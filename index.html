@@ -7,38 +7,38 @@
 	<canvas id="game" width="1000" height="1000"></canvas>
 	<div class="loadbox"><div class="loadboxtext">Loading...</div></div>
 	<script src="web/wasm_exec.js"></script>
-	<script>
-	var canvas = document.querySelector('#game');
-	var ctx = canvas.getContext('2d');
-	function doneLoading() {
-		document.querySelector('.loadbox').classList.add('hidden');
-	}
-	function displayError(err) {
-		let box = document.createElement('div');
-		box.innerText = err;
-		box.classList.add('errorbox');
-		document.body.appendChild(box);
-	}
-	// window.addEventListener('load', ()=>{
-		try {
-			const go = new Go();
-			WebAssembly.instantiateStreaming(fetch("web/main.wasm"), go.importObject).then((result) => {
-				go.run(result.instance);
-			});
-		} catch(err) {
-			console.error(err);
-			doneLoading();
-		}
-	// })
-	</script>
+	<script src="web/run.js"></script>
 	<style>
+		html, body, canvas {
+			position: fixed;
+			left: 0;
+			right: 0;
+			top: 0;
+			bottom: 0;
+		}
 		html, body {
+            background: #002;
 			margin: 0;
 			padding: 0;
 		}
 		canvas {
+            background: #CCE;
+			margin: auto;
 			border: 1px solid black;
 		}
+		@media (orientation: landscape) {
+			canvas {
+				width: calc(100vh - 2px);
+				height: calc(100vh - 2px);
+			}
+		}
+		@media (orientation: portrait) {
+			canvas {
+				width: calc(100vw - 2px);
+				height: calc(100vw - 2px);
+			}
+		}
+
 		.loadbox, .errorbox {
 			pointer-events: none;
 			position: fixed;
